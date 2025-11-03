@@ -1,0 +1,17 @@
+{
+    "name": "jules/free-shipping-wine",
+    "description": "Free shipping for 12 or more bottles of wine.",
+    "type": "shopware-platform-plugin",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Jules\\FreeShippingWine\\": "src/"
+        }
+    },
+    "extra": {
+        "shopware-plugin-class": "Jules\\FreeShippingWine\\JulesFreeShippingWine",
+        "label": {
+            "en-GB": "Jules Free Shipping Wine"
+        }
+    }
+}
