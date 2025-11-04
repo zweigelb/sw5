@@ -9,16 +9,11 @@ This plugin provides free shipping for orders of 12 or more bottles of wine.
 
 ## Configuration
 
-1.  Go to **Settings > Shop > Shipping**.
-2.  Click **Add shipping method**.
-3.  Give the shipping method a name (e.g., "Free Wine Shipping").
-4.  In the **Price calculation** dropdown, select **Jules Free Shipping Wine**.
-5.  Configure the availability rules as needed.
-6.  Click **Save**.
+This plugin works automatically with your existing shipping methods. Simply ensure you have a standard shipping method configured. If a customer's cart contains 12 or more bottles of wine, the shipping cost for that order will automatically be set to zero.
 
 ## Product Configuration
 
-For this plugin to work correctly, you must tag your wine products.
+For this plugin to work correctly, you must configure your wine products as follows:
 
 *   **6-packs:** Products that are a 6-pack of wine should be tagged with `6-pack`.
-*   **Single bottles:** Individual bottles of wine should be tagged with `wine`.
+*   **Single bottles:** Individual bottles of wine should be assigned to a category named "Wine".
