@@ -11,11 +11,11 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class LineItemSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var SalesChannelRepositoryInterface
+     * @var SalesChannelRepositoryInterface|null
      */
     private $productRepository;
 
-    public function __construct(SalesChannelRepositoryInterface $productRepository)
+    public function __construct(?SalesChannelRepositoryInterface $productRepository)
     {
         $this->productRepository = $productRepository;
     }
@@ -29,6 +29,11 @@ class LineItemSubscriber implements EventSubscriberInterface
 
     public function onBeforeLineItemAdded(BeforeLineItemAddedEvent $event): void
     {
+        // If the repository is null, we are in the admin panel, so do nothing.
+        if ($this->productRepository === null) {
+            return;
+        }
+
         $lineItem = $event->getLineItem();
         $context = $event->getSalesChannelContext();
 

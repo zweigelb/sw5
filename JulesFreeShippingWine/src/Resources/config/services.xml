@@ -5,13 +5,13 @@
     <services>
         <!-- This subscriber calculates the final shipping cost -->
         <service id="Jules\FreeShippingWine\Subscriber\CheckoutSubscriber">
-            <!-- The repository argument has been removed -->
             <tag name="kernel.event_subscriber" />
         </service>
 
         <!-- This subscriber "stamps" items when they are added to the cart -->
         <service id="Jules\FreeShippingWine\Subscriber\LineItemSubscriber">
-            <argument type="service" id="sales_channel.product.repository"/>
+            <!-- The 'on-invalid="null"' attribute prevents a crash if the service is not available -->
+            <argument type="service" id="sales_channel.product.repository" on-invalid="null"/>
             <tag name="kernel.event_subscriber" />
         </service>
     </services>
