@@ -15,11 +15,11 @@ class CheckoutSubscriber implements EventSubscriberInterface
     private const BOTTLE_COUNT_CUSTOM_FIELD = 'jules_bottle_count';
 
     /**
-     * @var SalesChannelRepositoryInterface
+     * @var SalesChannelRepositoryInterface|null
      */
     private $productRepository;
 
-    public function __construct(SalesChannelRepositoryInterface $productRepository)
+    public function __construct(?SalesChannelRepositoryInterface $productRepository)
     {
         $this->productRepository = $productRepository;
     }
@@ -33,6 +33,11 @@ class CheckoutSubscriber implements EventSubscriberInterface
 
     public function onAfterCartProcess(AfterCartProcessEvent $event): void
     {
+        // If the repository is not available (e.g., in admin), do nothing.
+        if ($this->productRepository === null) {
+            return;
+        }
+
         $cart = $event->getCart();
         $context = $event->getSalesChannelContext();
         $lineItems = $cart->getLineItems()->filterType(LineItem::PRODUCT_LINE_ITEM_TYPE);
@@ -44,8 +49,6 @@ class CheckoutSubscriber implements EventSubscriberInterface
         $productIds = $lineItems->getReferenceIds();
 
         $criteria = new Criteria($productIds);
-        // This is the crucial line that was missing in previous single-subscriber attempts.
-        // It forces Shopware to load the custom field data for the products.
         $criteria->addAssociation('customFields');
 
         $products = $this->productRepository->search($criteria, $context)->getEntities();

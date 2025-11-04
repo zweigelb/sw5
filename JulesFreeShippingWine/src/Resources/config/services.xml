@@ -5,7 +5,7 @@
     <services>
         <!-- This single subscriber now handles all logic -->
         <service id="Jules\FreeShippingWine\Subscriber\CheckoutSubscriber">
-            <argument type="service" id="sales_channel.product.repository"/>
+            <argument type="service" id="sales_channel.product.repository" on-invalid="null"/>
             <tag name="kernel.event_subscriber" />
         </service>
     </services>
