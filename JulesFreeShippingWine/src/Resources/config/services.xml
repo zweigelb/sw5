@@ -3,7 +3,14 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
+        <!-- This subscriber calculates the final shipping cost -->
         <service id="Jules\FreeShippingWine\Subscriber\CheckoutSubscriber">
+            <!-- The repository argument has been removed -->
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <!-- This subscriber "stamps" items when they are added to the cart -->
+        <service id="Jules\FreeShippingWine\Subscriber\LineItemSubscriber">
             <argument type="service" id="sales_channel.product.repository"/>
             <tag name="kernel.event_subscriber" />
         </service>
