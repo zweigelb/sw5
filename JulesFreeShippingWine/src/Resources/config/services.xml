@@ -3,8 +3,15 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <!-- This single subscriber now handles all logic and has no dependencies -->
+        <!-- This subscriber calculates the final shipping cost and has no dependencies -->
         <service id="Jules\FreeShippingWine\Subscriber\CheckoutSubscriber">
+            <tag name="kernel.event_subscriber" />
+        </service>
+
+        <!-- This subscriber "stamps" items with the bottle count when they are added to the cart -->
+        <service id="Jules\FreeShippingWine\Subscriber\LineItemSubscriber">
+            <!-- Making the dependency optional prevents crashes in the admin panel -->
+            <argument type="service" id="sales_channel.product.repository" on-invalid="null"/>
             <tag name="kernel.event_subscriber" />
         </service>
     </services>

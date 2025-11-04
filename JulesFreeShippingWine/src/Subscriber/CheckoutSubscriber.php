@@ -8,8 +8,6 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CheckoutSubscriber implements EventSubscriberInterface
 {
-    private const BOTTLE_COUNT_CUSTOM_FIELD = 'jules_bottle_count';
-
     public static function getSubscribedEvents(): array
     {
         return [
@@ -28,19 +26,15 @@ class CheckoutSubscriber implements EventSubscriberInterface
 
         $bottleCount = 0;
         foreach ($lineItems as $lineItem) {
-            $itemBottleCount = 1; // Default to 1 bottle per item.
+            // Read the "stamped" bottle count from the payload.
+            $itemBottleCount = $lineItem->getPayloadValue(LineItemSubscriber::BOTTLE_COUNT_PAYLOAD_KEY);
 
-            // Custom fields that are enabled for the sales channel are available in the line item's payload.
-            $customFields = $lineItem->getPayloadValue('customFields');
-
-            if (is_array($customFields) && isset($customFields[self::BOTTLE_COUNT_CUSTOM_FIELD])) {
-                $count = (int)$customFields[self::BOTTLE_COUNT_CUSTOM_FIELD];
-                if ($count > 0) {
-                    $itemBottleCount = $count;
-                }
+            // If the stamp exists and is a valid number, use it. Otherwise, default to 1.
+            if ($itemBottleCount && is_int($itemBottleCount) && $itemBottleCount > 0) {
+                $bottleCount += ($itemBottleCount * $lineItem->getQuantity());
+            } else {
+                $bottleCount += $lineItem->getQuantity();
             }
-
-            $bottleCount += ($itemBottleCount * $lineItem->getQuantity());
         }
 
         if ($bottleCount >= 12) {
