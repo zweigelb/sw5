@@ -2,22 +2,22 @@
 
 namespace Jules\FreeShippingWine\Subscriber;
 
-use Shopware\Core\Checkout\Cart\Event\CheckoutCartEvent;
+use Shopware\Core\Checkout\Cart\Event\AfterCartProcessEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\EntityRepositoryInterface;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
 use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
+use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CheckoutSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var EntityRepositoryInterface
+     * @var SalesChannelRepositoryInterface
      */
     private $productRepository;
 
-    public function __construct(EntityRepositoryInterface $productRepository)
+    public function __construct(SalesChannelRepositoryInterface $productRepository)
     {
         $this->productRepository = $productRepository;
     }
@@ -25,11 +25,12 @@ class CheckoutSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            CheckoutCartEvent::class => 'onCheckoutCart',
+            // Subscribe to the event that fires *after* all costs are calculated.
+            AfterCartProcessEvent::class => 'onAfterCartProcess',
         ];
     }
 
-    public function onCheckoutCart(CheckoutCartEvent $event): void
+    public function onAfterCartProcess(AfterCartProcessEvent $event): void
     {
         $cart = $event->getCart();
         $context = $event->getSalesChannelContext();
@@ -46,23 +47,23 @@ class CheckoutSubscriber implements EventSubscriberInterface
         $criteria->addFilter(new EqualsAnyFilter('id', $productIds));
         $criteria->addAssociation('tags');
 
-        $products = $this->productRepository->search($criteria, $context->getContext())->getEntities();
+        $products = $this->productRepository->search($criteria, $context)->getEntities();
 
+        // This check is important, but if products aren't found, we can't count them.
         if ($products->count() === 0) {
-            // This can happen if products are removed while the cart is active.
-            // We can just count the remaining items as single bottles.
-            $bottleCount = $productLineItems->getQuantity();
-        } else {
-            $bottleCount = 0;
-            foreach ($productLineItems as $lineItem) {
-                /** @var ProductEntity|null $product */
-                $product = $products->get($lineItem->getReferenceId());
+            return;
+        }
 
-                if ($product !== null && $this->isSixPack($product)) {
-                    $bottleCount += 6 * $lineItem->getQuantity();
-                } else {
-                    $bottleCount += $lineItem->getQuantity();
-                }
+        $bottleCount = 0;
+        foreach ($productLineItems as $lineItem) {
+            /** @var ProductEntity|null $product */
+            $product = $products->get($lineItem->getReferenceId());
+
+            if ($product !== null && $this->isSixPack($product)) {
+                $bottleCount += 6 * $lineItem->getQuantity();
+            } else {
+                // This now correctly counts items where the product might be missing from the search result.
+                $bottleCount += $lineItem->getQuantity();
             }
         }
 
@@ -81,7 +82,8 @@ class CheckoutSubscriber implements EventSubscriberInterface
         }
 
         foreach ($tags as $tag) {
-            if ($tag->getName() === '6-pack') {
+            // Trim whitespace and convert to lowercase for a robust, case-insensitive comparison.
+            if (strtolower(trim($tag->getName())) === '6-pack') {
                 return true;
             }
         }
