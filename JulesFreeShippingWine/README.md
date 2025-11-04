@@ -25,7 +25,9 @@ This plugin uses **Custom Fields** to determine the number of "bottles" in each 
 2.  For the **Type**, select **Number**.
 3.  For the **Technical name**, you **MUST** enter exactly: `jules_bottle_count`
 4.  For the **Label**, you can enter something descriptive, like `Number of Bottles`.
-5.  Click **Save**.
+5.  Click on the newly created custom field to open its detailed settings.
+6.  **CRITICAL STEP:** Under the **API Access** section, check the box for **Storefront**. This makes the custom field visible to the plugin.
+7.  Click **Save**.
 
 ### Step 3: Set the Bottle Count on Your Products
 
@@ -33,14 +35,6 @@ This plugin uses **Custom Fields** to determine the number of "bottles" in each 
 2.  Scroll down to the **Specifications** section.
 3.  You should see your new "Product Bottle Count" custom field set.
 4.  In the "Number of Bottles" field, enter the number of bottles for that product (e.g., `6`).
-5.  Click **Save**.
-
-### Step 4: Make Custom Field Available to Storefront (CRITICAL STEP)
-
-1.  Go to your Sales Channel settings (e.g., click on **Storefront** in the left-hand menu).
-2.  Under the **General** tab, find the **Custom Fields** section and click the **Edit** button.
-3.  In the modal that appears, find your "**Product Bottle Count**" custom field set in the list.
-4.  **Check the box** next to it to make it available to the storefront.
 5.  Click **Save**.
 
 ## Troubleshooting
