@@ -9,7 +9,7 @@ This plugin provides free shipping for orders where the total "bottle count" is 
 
 ## Product Configuration (IMPORTANT)
 
-This plugin uses **Custom Fields** to determine the number of "bottles" in each product. You must create this custom field before the plugin will work.
+This plugin uses **Custom Fields** to determine the number of "bottles" in each product. You must create and configure this custom field correctly for the plugin to work.
 
 ### Step 1: Create the Custom Field Set
 
@@ -35,4 +35,12 @@ This plugin uses **Custom Fields** to determine the number of "bottles" in each 
 4.  In the "Number of Bottles" field, enter the number of bottles for that product (e.g., `6`).
 5.  Click **Save**.
 
-**That's it!** Any product with a number in this field will be counted accordingly. All other products in your store will automatically be counted as **1 bottle** each.
+### Step 4: Make Custom Field Available to Storefront (CRITICAL STEP)
+
+1.  Go to your Sales Channel settings (e.g., click on **Storefront** in the left-hand menu).
+2.  Under the **General** tab, find the **Custom Fields** section and click the **Edit** button.
+3.  In the modal that appears, find your "**Product Bottle Count**" custom field set in the list.
+4.  **Check the box** next to it to make it available to the storefront.
+5.  Click **Save**.
+
+**That's it!** Once the custom field is enabled for your sales channel, the plugin will be able to read the value and correctly calculate the shipping costs. All other products in your store will automatically be counted as **1 bottle** each.

@@ -44,6 +44,9 @@ class CheckoutSubscriber implements EventSubscriberInterface
         $productIds = $lineItems->getReferenceIds();
 
         $criteria = new Criteria($productIds);
+        // CRITICAL FIX: Explicitly load the customFields association.
+        $criteria->addAssociation('customFields');
+
         $products = $this->productRepository->search($criteria, $context)->getEntities();
 
         $bottleCount = 0;
@@ -67,7 +70,6 @@ class CheckoutSubscriber implements EventSubscriberInterface
         }
 
         if ($bottleCount >= 12) {
-            // CORRECTED: Iterate over the shipping cost collection and modify each one.
             foreach ($cart->getShippingCosts() as $shippingCost) {
                 $shippingCost->setUnitPrice(0);
                 $shippingCost->setTotalPrice(0);
