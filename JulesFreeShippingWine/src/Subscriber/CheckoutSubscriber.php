@@ -4,23 +4,12 @@ namespace Jules\FreeShippingWine\Subscriber;
 
 use Shopware\Core\Checkout\Cart\Event\AfterCartProcessEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CheckoutSubscriber implements EventSubscriberInterface
 {
-    /**
-     * @var SalesChannelRepositoryInterface
-     */
-    private $productRepository;
-
-    public function __construct(SalesChannelRepositoryInterface $productRepository)
-    {
-        $this->productRepository = $productRepository;
-    }
+    // The custom field's technical name.
+    private const BOTTLE_COUNT_CUSTOM_FIELD = 'jules_bottle_count';
 
     public static function getSubscribedEvents(): array
     {
@@ -32,35 +21,27 @@ class CheckoutSubscriber implements EventSubscriberInterface
     public function onAfterCartProcess(AfterCartProcessEvent $event): void
     {
         $cart = $event->getCart();
-        $context = $event->getSalesChannelContext();
         $lineItems = $cart->getLineItems()->filterType(LineItem::PRODUCT_LINE_ITEM_TYPE);
 
         if ($lineItems->count() === 0) {
             return;
         }
 
-        $productIds = $lineItems->getReferenceIds();
-
-        $criteria = new Criteria();
-        $criteria->addFilter(new EqualsAnyFilter('id', $productIds));
-        $criteria->addAssociation('tags');
-
-        $products = $this->productRepository->search($criteria, $context)->getEntities();
-
-        if ($products->count() === 0) {
-            return; // No products found, so can't determine tags.
-        }
-
         $bottleCount = 0;
         foreach ($lineItems as $lineItem) {
-            /** @var ProductEntity|null $product */
-            $product = $products->get($lineItem->getReferenceId());
+            $itemBottleCount = 1; // Default to 1 bottle per item.
 
-            if ($product !== null && $this->isSixPack($product)) {
-                $bottleCount += 6 * $lineItem->getQuantity();
-            } else {
-                $bottleCount += $lineItem->getQuantity();
+            $customFields = $lineItem->getPayloadValue('customFields');
+
+            if (isset($customFields[self::BOTTLE_COUNT_CUSTOM_FIELD])) {
+                $count = (int)$customFields[self::BOTTLE_COUNT_CUSTOM_FIELD];
+                // Ensure the custom field value is a positive number.
+                if ($count > 0) {
+                    $itemBottleCount = $count;
+                }
             }
+
+            $bottleCount += ($itemBottleCount * $lineItem->getQuantity());
         }
 
         if ($bottleCount >= 12) {
@@ -68,21 +49,5 @@ class CheckoutSubscriber implements EventSubscriberInterface
             $shippingCosts->setUnitPrice(0);
             $shippingCosts->setTotalPrice(0);
         }
-    }
-
-    private function isSixPack(ProductEntity $product): bool
-    {
-        $tags = $product->getTags();
-        if ($tags === null) {
-            return false;
-        }
-
-        foreach ($tags as $tag) {
-            if (strtolower(trim($tag->getName())) === '6-pack') {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
