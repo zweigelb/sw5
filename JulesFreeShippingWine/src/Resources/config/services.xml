@@ -11,7 +11,7 @@
         </service>
 
         <!-- This service intercepts price calculations and divides the price for our new items -->
-        <service id="Jules\FreeShippingWine\Subscriber\PriceSubscriber" decorates="Shopware\Core\Checkout\Cart\Price\PriceCalculator">
+        <service id="Jules\FreeShippingWine\Subscriber\PriceSubscriber" decorates="Shopware\Core\Checkout\Cart\Price\QuantityPriceCalculator">
             <argument type="service" id="Jules\FreeShippingWine\Subscriber\PriceSubscriber.inner"/>
         </service>
     </services>

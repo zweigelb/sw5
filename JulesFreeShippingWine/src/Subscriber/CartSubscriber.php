@@ -2,7 +2,6 @@
 
 namespace Jules\FreeShippingWine\Subscriber;
 
-use Shopware\Core\Checkout\Cart\Cart;
 use Shopware\Core\Checkout\Cart\Event\BeforeLineItemAddedEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
 use Shopware\Core\Content\Product\Cart\ProductLineItemFactory;
@@ -72,8 +71,8 @@ class CartSubscriber implements EventSubscriberInterface
             return; // Custom field is set to 1 or less, so treat as a single item.
         }
 
-        // Prevent the original "package" item from being added to the cart.
-        $event->setLineItem(new LineItem('temp-placeholder', 'temp'));
+        // CORRECTED: Cancel the original "add to cart" event completely.
+        $event->cancel();
 
         // Create the new, single "bottle" line items.
         for ($i = 0; $i < $bottleCount; $i++) {

@@ -8,6 +8,8 @@ use Shopware\Core\Checkout\Cart\Price\Struct\QuantityPriceDefinition;
 use Shopware\Core\System\SalesChannel\SalesChannelContext;
 use Shopware\Core\Checkout\Cart\Price\PriceCalculatorInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
+use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
 
 class PriceSubscriber implements PriceCalculatorInterface
 {
@@ -30,10 +32,17 @@ class PriceSubscriber implements PriceCalculatorInterface
                 $newUnitPrice = $price->getUnitPrice() / $divisor;
                 $newTotalPrice = $price->getTotalPrice() / $divisor;
 
+                // CORRECTED: Also divide the calculated taxes.
+                $newTaxes = new CalculatedTaxCollection();
+                /** @var CalculatedTax $tax */
+                foreach ($price->getCalculatedTaxes() as $tax) {
+                    $newTaxes->add(new CalculatedTax($tax->getTax() / $divisor, $tax->getTaxRate(), $newTotalPrice));
+                }
+
                 return new CalculatedPrice(
                     $newUnitPrice,
                     $newTotalPrice,
-                    $price->getCalculatedTaxes(),
+                    $newTaxes,
                     $price->getTaxRules(),
                     $price->getQuantity()
                 );
