@@ -43,4 +43,15 @@ This plugin uses **Custom Fields** to determine the number of "bottles" in each 
 4.  **Check the box** next to it to make it available to the storefront.
 5.  Click **Save**.
 
-**That's it!** Once the custom field is enabled for your sales channel, the plugin will be able to read the value and correctly calculate the shipping costs. All other products in your store will automatically be counted as **1 bottle** each.
+## Troubleshooting
+
+**Problem: The bottle count is not being updated in the cart.**
+
+If you have configured your custom fields but the shipping costs are not being calculated correctly, the most likely cause is caching.
+
+**Solution: Clear the Shopware Cache**
+
+1.  In your Shopware Admin, go to **Settings > System > Caches & Indexes**.
+2.  Click the **Clear Caches** button.
+
+After clearing the cache, you may also need to remove the items from your cart and add them again for the new custom field data to be correctly loaded.

@@ -4,25 +4,11 @@ namespace Jules\FreeShippingWine\Subscriber;
 
 use Shopware\Core\Checkout\Cart\Event\AfterCartProcessEvent;
 use Shopware\Core\Checkout\Cart\LineItem\LineItem;
-use Shopware\Core\Content\Product\ProductEntity;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Criteria;
-use Shopware\Core\Framework\DataAbstractionLayer\Search\Filter\EqualsAnyFilter;
-use Shopware\Core\System\SalesChannel\Entity\SalesChannelRepositoryInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class CheckoutSubscriber implements EventSubscriberInterface
 {
     private const BOTTLE_COUNT_CUSTOM_FIELD = 'jules_bottle_count';
-
-    /**
-     * @var SalesChannelRepositoryInterface
-     */
-    private $productRepository;
-
-    public function __construct(SalesChannelRepositoryInterface $productRepository)
-    {
-        $this->productRepository = $productRepository;
-    }
 
     public static function getSubscribedEvents(): array
     {
@@ -34,35 +20,23 @@ class CheckoutSubscriber implements EventSubscriberInterface
     public function onAfterCartProcess(AfterCartProcessEvent $event): void
     {
         $cart = $event->getCart();
-        $context = $event->getSalesChannelContext();
         $lineItems = $cart->getLineItems()->filterType(LineItem::PRODUCT_LINE_ITEM_TYPE);
 
         if ($lineItems->count() === 0) {
             return;
         }
 
-        $productIds = $lineItems->getReferenceIds();
-
-        $criteria = new Criteria($productIds);
-        // CRITICAL FIX: Explicitly load the customFields association.
-        $criteria->addAssociation('customFields');
-
-        $products = $this->productRepository->search($criteria, $context)->getEntities();
-
         $bottleCount = 0;
         foreach ($lineItems as $lineItem) {
-            $itemBottleCount = 1; // Default to 1
+            $itemBottleCount = 1; // Default to 1 bottle per item.
 
-            /** @var ProductEntity|null $product */
-            $product = $products->get($lineItem->getReferenceId());
+            // Custom fields that are enabled for the sales channel are available in the line item's payload.
+            $customFields = $lineItem->getPayloadValue('customFields');
 
-            if ($product !== null) {
-                $customFields = $product->getCustomFields();
-                if (isset($customFields[self::BOTTLE_COUNT_CUSTOM_FIELD])) {
-                    $count = (int)$customFields[self::BOTTLE_COUNT_CUSTOM_FIELD];
-                    if ($count > 0) {
-                        $itemBottleCount = $count;
-                    }
+            if (is_array($customFields) && isset($customFields[self::BOTTLE_COUNT_CUSTOM_FIELD])) {
+                $count = (int)$customFields[self::BOTTLE_COUNT_CUSTOM_FIELD];
+                if ($count > 0) {
+                    $itemBottleCount = $count;
                 }
             }
 
