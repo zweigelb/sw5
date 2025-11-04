@@ -3,10 +3,16 @@
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
            xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
     <services>
-        <!-- This single subscriber now handles all logic -->
-        <service id="Jules\FreeShippingWine\Subscriber\CheckoutSubscriber">
+        <!-- This subscriber intercepts products and adds them as multiple items if needed -->
+        <service id="Jules\FreeShippingWine\Subscriber\CartSubscriber">
             <argument type="service" id="sales_channel.product.repository" on-invalid="null"/>
+            <argument type="service" id="Shopware\Core\Content\Product\Cart\ProductLineItemFactory"/>
             <tag name="kernel.event_subscriber" />
+        </service>
+
+        <!-- This service intercepts price calculations and divides the price for our new items -->
+        <service id="Jules\FreeShippingWine\Subscriber\PriceSubscriber" decorates="Shopware\Core\Checkout\Cart\Price\PriceCalculator">
+            <argument type="service" id="Jules\FreeShippingWine\Subscriber\PriceSubscriber.inner"/>
         </service>
     </services>
 </container>

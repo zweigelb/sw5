@@ -1,6 +1,6 @@
-# Jules Free Shipping Wine (v1.0.6)
+# Jules Free Shipping Wine (v1.0.9)
 
-This plugin provides free shipping for orders where the total "bottle count" is 12 or more. The bottle count is determined by a custom field on your products.
+This plugin works with Shopware's own shipping rules. It ensures that products with a "bottle count" are added to the cart as multiple items, allowing your existing shipping rules (e.g., "free shipping for 12 or more items") to work correctly.
 
 ## Installation
 
@@ -9,7 +9,7 @@ This plugin provides free shipping for orders where the total "bottle count" is 
 
 ## Product Configuration (IMPORTANT)
 
-This plugin uses a **Custom Field** to determine the number of "bottles" in each product. You must create this custom field for the plugin to work.
+This plugin uses a **Custom Field** to determine how many items a single product should represent in the cart.
 
 ### Step 1: Create the Custom Field
 
@@ -24,22 +24,9 @@ This plugin uses a **Custom Field** to determine the number of "bottles" in each
 
 ### Step 2: Set the Bottle Count on Your Products
 
-1.  Go to any product that should count as more than one bottle (e.g., your "6-pack" products).
+1.  Go to any product that should count as more than one item (e.g., your "6-pack" products).
 2.  Scroll down to the section for your custom fields (e.g., "Product Information").
-3.  In the "Number of Bottles" field, enter the number of bottles for that product (e.g., `6`).
+3.  In the "Number of Bottles" field, enter the number of items that product represents (e.g., `6`).
 4.  Click **Save**.
 
-**That's it!** Any product with a number in this field will be counted accordingly. All other products in your store will automatically be counted as **1 bottle** each.
-
-## Troubleshooting
-
-**Problem: The bottle count is not being updated in the cart.**
-
-If you have configured your custom fields but the shipping costs are still not being calculated correctly, the most likely cause is caching.
-
-**Solution: Clear the Shopware Cache**
-
-1.  In your Shopware Admin, go to **Settings > System > Caches & Indexes**.
-2.  Click the **Clear Caches** button.
-
-After clearing the cache, you **must remove the items from your cart and add them again**. The bottle count is saved only when you first add an item to the cart.
+**That's it!** Now, when you add a "6-pack" to the cart, it will appear as 6 individual items, and the price will be divided accordingly. This allows Shopware's own shipping rules to correctly calculate the total number of items in the cart.
