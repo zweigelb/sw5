@@ -57,9 +57,9 @@ class LineItemSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // Check for the 6-pack tag and add a flag to the line item's payload
+        // Check for the 6-pack tag and add a string flag to the line item's payload
         if ($this->isSixPack($product)) {
-            $lineItem->setPayloadValue('isSixPack', true);
+            $lineItem->setPayloadValue('isSixPack', 'true');
         }
     }
 

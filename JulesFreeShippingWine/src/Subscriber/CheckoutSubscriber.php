@@ -31,8 +31,8 @@ class CheckoutSubscriber implements EventSubscriberInterface
 
         $bottleCount = 0;
         foreach ($lineItems as $lineItem) {
-            // Check for the 'isSixPack' flag in the item's payload.
-            if ($lineItem->getPayloadValue('isSixPack')) {
+            // Check for the 'isSixPack' string flag in the item's payload.
+            if ($lineItem->getPayloadValue('isSixPack') === 'true') {
                 $bottleCount += 6 * $lineItem->getQuantity();
             } else {
                 $bottleCount += $lineItem->getQuantity();
