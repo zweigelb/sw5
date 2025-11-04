@@ -45,27 +45,24 @@ class CheckoutSubscriber implements EventSubscriberInterface
         $criteria = new Criteria();
         $criteria->addFilter(new EqualsAnyFilter('id', $productIds));
         $criteria->addAssociation('tags');
-        $criteria->addAssociation('categories');
 
         $products = $this->productRepository->search($criteria, $context->getContext())->getEntities();
 
         if ($products->count() === 0) {
-            return;
-        }
+            // This can happen if products are removed while the cart is active.
+            // We can just count the remaining items as single bottles.
+            $bottleCount = $productLineItems->getQuantity();
+        } else {
+            $bottleCount = 0;
+            foreach ($productLineItems as $lineItem) {
+                /** @var ProductEntity|null $product */
+                $product = $products->get($lineItem->getReferenceId());
 
-        $bottleCount = 0;
-        foreach ($productLineItems as $lineItem) {
-            /** @var ProductEntity|null $product */
-            $product = $products->get($lineItem->getReferenceId());
-
-            if ($product === null) {
-                continue;
-            }
-
-            if ($this->isSixPack($product)) {
-                $bottleCount += 6 * $lineItem->getQuantity();
-            } elseif ($this->isSingleBottle($product)) {
-                $bottleCount += $lineItem->getQuantity();
+                if ($product !== null && $this->isSixPack($product)) {
+                    $bottleCount += 6 * $lineItem->getQuantity();
+                } else {
+                    $bottleCount += $lineItem->getQuantity();
+                }
             }
         }
 
@@ -85,22 +82,6 @@ class CheckoutSubscriber implements EventSubscriberInterface
 
         foreach ($tags as $tag) {
             if ($tag->getName() === '6-pack') {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function isSingleBottle(ProductEntity $product): bool
-    {
-        $categories = $product->getCategories();
-        if ($categories === null) {
-            return false;
-        }
-
-        foreach ($categories as $category) {
-            if ($category->getName() === 'Wine') {
                 return true;
             }
         }

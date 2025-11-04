@@ -1,6 +1,6 @@
 # Jules Free Shipping Wine
 
-This plugin provides free shipping for orders of 12 or more bottles of wine.
+This plugin provides free shipping for orders of 12 or more bottles.
 
 ## Installation
 
@@ -9,11 +9,11 @@ This plugin provides free shipping for orders of 12 or more bottles of wine.
 
 ## Configuration
 
-This plugin works automatically with your existing shipping methods. Simply ensure you have a standard shipping method configured. If a customer's cart contains 12 or more bottles of wine, the shipping cost for that order will automatically be set to zero.
+This plugin works automatically with your existing shipping methods. Simply ensure you have a standard shipping method configured. If a customer's cart contains 12 or more bottles, the shipping cost for that order will automatically be set to zero.
 
 ## Product Configuration
 
-For this plugin to work correctly, you must configure your wine products as follows:
+For this plugin to work correctly, you must tag your 6-pack products:
 
-*   **6-packs:** Products that are a 6-pack of wine should be tagged with `6-pack`.
-*   **Single bottles:** Individual bottles of wine should be assigned to a category named "Wine".
+*   **6-packs:** Products that are a 6-pack should be tagged with `6-pack`.
+*   **Other Items:** All other items in your store are automatically counted as a single bottle. No special configuration is needed for them.
