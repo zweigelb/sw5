@@ -10,6 +10,7 @@ use Shopware\Core\Checkout\Cart\Price\PriceCalculatorInterface;
 use Shopware\Core\Framework\Struct\ArrayStruct;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTax;
 use Shopware\Core\Checkout\Cart\Tax\Struct\CalculatedTaxCollection;
+use Shopware\Core\Checkout\Cart\Price\QuantityPriceCalculator;
 
 class PriceSubscriber implements PriceCalculatorInterface
 {
