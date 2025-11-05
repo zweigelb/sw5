@@ -6,7 +6,6 @@
         <!-- This subscriber intercepts products and adds them as multiple items if needed -->
         <service id="Jules\FreeShippingWine\Subscriber\CartSubscriber">
             <argument type="service" id="sales_channel.product.repository" on-invalid="null"/>
-            <argument type="service" id="product.line-item.factory"/>
             <tag name="kernel.event_subscriber" />
         </service>
 
