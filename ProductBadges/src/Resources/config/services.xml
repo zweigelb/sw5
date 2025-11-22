@@ -6,5 +6,8 @@
         <service id="Swag\ProductBadges\Subscriber\ProductListingSubscriber">
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="Swag\ProductBadges\Subscriber\ProductListingCriteriaSubscriber">
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 </container>
