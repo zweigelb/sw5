@@ -3,7 +3,7 @@
 namespace Swag\ProductBadges\Subscriber;
 
 use Shopware\Core\Content\Product\Events\ProductListingResultEvent;
-use Shopware\Core\Framework\Struct\Struct;
+use Shopware\Core\Framework\Struct\ArrayStruct;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class ProductListingSubscriber implements EventSubscriberInterface
@@ -21,7 +21,7 @@ class ProductListingSubscriber implements EventSubscriberInterface
 
         foreach ($products as $product) {
             if ($product->getShippingFree()) {
-                $product->addExtension('free_shipping_badge', new Struct());
+                $product->addExtension('free_shipping_badge', new ArrayStruct());
             }
         }
     }
