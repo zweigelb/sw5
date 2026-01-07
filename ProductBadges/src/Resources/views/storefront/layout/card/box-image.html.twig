@@ -1,0 +1,8 @@
+{% sw_extends '@Storefront/storefront/layout/card/box-image.html.twig' %}
+
+{% block storefront_layout_card_box_image %}
+    {{ parent() }}
+    {% if product.extensions.free_shipping_badge %}
+        <div class="product-badge">{{ "product-badges.freeShipping"|trans }}</div>
+    {% endif %}
+{% endblock %}
